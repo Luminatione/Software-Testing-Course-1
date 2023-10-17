@@ -1,0 +1,26 @@
+[
+    {
+        "Id": 0,
+        "Name": "abc",
+        "SecondName": "anc",
+        "Email": "qwerty"
+    },
+    {
+        "Id": 0,
+        "Name": "123",
+        "SecondName": "567",
+        "Email": "asdfgh"
+    },
+    {
+        "Id": 1,
+        "Name": "iop",
+        "SecondName": "jkl",
+        "Email": "cvbcvb"
+    },
+    {
+        "Id": 1,
+        "Name": "567123",
+        "SecondName": "324",
+        "Email": "mnhgfd"
+    }
+]
