@@ -30,8 +30,8 @@ namespace ConsoleApp1
 			{
 				canFullifyOrder &= productRepository.GetProductById(product.Id).StoredAmount >= product.StoredAmount;
 			}
-			
-			if (!canFullifyOrder) 
+
+			if (!canFullifyOrder)
 			{
 				throw new ArgumentException("Order cannot be fullified");
 			}
@@ -50,21 +50,31 @@ namespace ConsoleApp1
 			ValidateClientId(clientId);
 			ValidateProductList(productList);
 			int orderId = orderRepository.GetAllOrders().LastOrDefault()?.ID + 1 ?? 0;
-			foreach(var product in productList)
+			foreach (var product in productList)
 			{
 				productRepository.GetProductById(product.Id).StoredAmount -= product.StoredAmount;
 			}
 			orderRepository.AddOrder(new Order(orderId, clientId, productList, Order.OrderStatus.New));
 		}
 
+		public Order GetOrderById(int orderId)
+		{
+			return orderRepository.GetOrderById(orderId);
+		}
+
+		public List<Order> GetAllOrders()
+		{
+			return orderRepository.GetAllOrders();
+		}
+
 		public void CancelOrder(int orderId)
 		{
 			ValidateOrder(orderId);
-            foreach (var product in orderRepository.GetOrderById(orderId).ProductList)
-            {
-                productRepository.GetProductById(product.Id).StoredAmount += product.StoredAmount;
-            }
-            orderRepository.DeleteOrder(orderId);	
+			foreach (var product in orderRepository.GetOrderById(orderId).ProductList)
+			{
+				productRepository.GetProductById(product.Id).StoredAmount += product.StoredAmount;
+			}
+			orderRepository.DeleteOrder(orderId);
 		}
 
 		public void UpdateOrder(int orderId, int customerId, List<Product> productList, Order.OrderStatus status)
@@ -72,12 +82,12 @@ namespace ConsoleApp1
 			ValidateClientId(customerId);
 			ValidateProductList(productList);
 			ValidateOrder(orderId);
-            foreach (var product in productList)
-            {
-                productRepository.GetProductById(product.Id).StoredAmount -= product.StoredAmount -
+			foreach (var product in productList)
+			{
+				productRepository.GetProductById(product.Id).StoredAmount -= product.StoredAmount -
 					orderRepository.GetOrderById(orderId).ProductList.Where(p => p.Id == product.Id).First()?.StoredAmount ?? 0;
-            }
-            orderRepository.UpdateOrder(new Order(orderId, customerId , productList, status));
+			}
+			orderRepository.UpdateOrder(new Order(orderId, customerId, productList, status));
 		}
 	}
 }
