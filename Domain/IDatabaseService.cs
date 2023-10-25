@@ -15,6 +15,7 @@ namespace Database
         public Order? GetOrderByIdOrNull(int orderId);
         public Client? GetClientByIdOrNull(int clientId);
         public Product? GetProductByIdOrNull(int productId);
+        public Task<List<Product>> GetAllProductsAsync();
     }
 }
 

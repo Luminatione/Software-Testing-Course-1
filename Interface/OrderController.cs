@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Mvc;
+
 namespace Interface;
 
-public class OrderController
+public class OrderController: Controller
 {
-    
+
 }
