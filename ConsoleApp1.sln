@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp1", "ConsoleApp1\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestProject1", "TestProject1\TestProject1.csproj", "{D7021417-C0E9-49AA-9CDD-118F9F9F9192}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProject2", "TestProject2\TestProject2.csproj", "{2B890445-C2F3-4940-97B2-5E0446F36BCA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestProject2", "TestProject2\TestProject2.csproj", "{2B890445-C2F3-4940-97B2-5E0446F36BCA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1Testing.IntegrationTests", "ConsoleApp1Testing.IntegrationTests\ConsoleApp1Testing.IntegrationTests.csproj", "{770366B2-53F6-4131-AB6B-C63253F5A6E2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data", "Data\Data.csproj", "{7067B017-7CCB-4CCA-BF36-0C02FDC821FF}"
 EndProject
@@ -33,6 +35,10 @@ Global
 		{2B890445-C2F3-4940-97B2-5E0446F36BCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B890445-C2F3-4940-97B2-5E0446F36BCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B890445-C2F3-4940-97B2-5E0446F36BCA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{770366B2-53F6-4131-AB6B-C63253F5A6E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{770366B2-53F6-4131-AB6B-C63253F5A6E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{770366B2-53F6-4131-AB6B-C63253F5A6E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{770366B2-53F6-4131-AB6B-C63253F5A6E2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7067B017-7CCB-4CCA-BF36-0C02FDC821FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7067B017-7CCB-4CCA-BF36-0C02FDC821FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7067B017-7CCB-4CCA-BF36-0C02FDC821FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
