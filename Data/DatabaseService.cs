@@ -1,4 +1,5 @@
 using ConsoleApp1.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace Database
 {
@@ -90,6 +91,11 @@ namespace Database
         public Product? GetProductByIdOrNull(int productId)
         {
             return _databaseContext.Products.FirstOrDefault(p => p.Id == productId);
+        }
+
+        public async Task<List<Product>> GetAllProductsAsync()
+        {
+            return await _databaseContext.Products.ToListAsync();
         }
     }
 }

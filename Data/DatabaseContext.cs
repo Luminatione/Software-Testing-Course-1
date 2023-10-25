@@ -32,7 +32,6 @@ namespace Database
         {
             options.UseSqlite($"Data Source={DbPath}");
             base.OnConfiguring(options);
-            Console.WriteLine("AAAAAAAA");
         }
     }    
 }
