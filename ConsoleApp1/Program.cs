@@ -1,6 +1,4 @@
 ﻿using ConsoleApp1;
-using ConsoleApp1.DataBase;
-using ConsoleApp1.Controllers;
 using ConsoleApp1.Model;
 using ConsoleApp1.Repository;
 
