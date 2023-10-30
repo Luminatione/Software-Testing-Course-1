@@ -1,5 +1,6 @@
 ﻿using ConsoleApp1.Model;
 using ConsoleApp1.Repository.Interface;
+using ConsoleApp1.DataBase;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp1
 {
-	public class OrderController(IOrderRepository orderRepository, IClientRepository clientRepository, IProductRepository productRepository)
+	public class OrderController(IOrderRepository orderRepository, IClientRepository clientRepository, IProductRepository productRepository, IDatabaseService databaseService)
 	{
 		private void ValidateClientId(int clientId)
 		{
-			if (clientRepository.GetClientById(clientId) == null)
+			if (databaseService.GetClientByIdOrNull(clientId) == null)
 			{
 				throw new ArgumentException("Client doesn't exist");
 			}
@@ -20,7 +21,7 @@ namespace ConsoleApp1
 
 		private void ValidateProductList(List<Product> productList)
 		{
-			if (!productList.All(p => productRepository.GetAllProducts().Select(e => e.Id).Contains(p.Id)))
+			if (!productList.All(p => databaseService.GetAllProductsAsync().Select(e => e.Id).Contains(p.Id)))
 			{
 				throw new ArgumentException("Product doesn't exist");
 			}
@@ -28,7 +29,7 @@ namespace ConsoleApp1
 			bool canFullifyOrder = true;
 			foreach (var product in productList)
 			{
-				canFullifyOrder &= productRepository.GetProductById(product.Id).StoredAmount >= product.StoredAmount;
+				canFullifyOrder &= databaseService.GetProductById(product.Id).StoredAmount >= product.StoredAmount;
 			}
 
 			if (!canFullifyOrder)
@@ -39,7 +40,7 @@ namespace ConsoleApp1
 
 		private void ValidateOrder(int orderId)
 		{
-			if (orderRepository.GetOrderById(orderId) == null)
+			if (databaseService.GetOrderById(orderId) == null)
 			{
 				throw new ArgumentException("No order with such Id");
 			}
@@ -49,6 +50,7 @@ namespace ConsoleApp1
 		{
 			ValidateClientId(clientId);
 			ValidateProductList(productList);
+			// Nie da rady, bo brak metody GetAllOrders w DatabaseService
 			int orderId = orderRepository.GetAllOrders().LastOrDefault()?.ID + 1 ?? 0;
 			foreach (var product in productList)
 			{
@@ -59,26 +61,27 @@ namespace ConsoleApp1
 
 		public Order GetOrderById(int orderId)
 		{
-			return orderRepository.GetOrderById(orderId);
+			return databaseService.GetOrderById(orderId);
 		}
 
 		public List<Order> GetAllOrders()
 		{
-			return orderRepository.GetAllOrders();
+			return databaseService.GetAllOrders();
 		}
 
 		public void CancelOrder(int orderId)
 		{
 			ValidateOrder(orderId);
-			foreach (var product in orderRepository.GetOrderById(orderId).ProductList)
+			foreach (var product in databaseService.GetOrderById(orderId).ProductList)
 			{
-				productRepository.GetProductById(product.Id).StoredAmount += product.StoredAmount;
+				databaseService.GetProductById(product.Id).StoredAmount += product.StoredAmount;
 			}
-			orderRepository.DeleteOrder(orderId);
+			databaseService.RemoveOrder(orderId);
 		}
 
 		public void UpdateOrder(int orderId, int customerId, List<Product> productList, Order.OrderStatus status)
 		{
+			// Nie da rady bo brak update'ów w DatabaseService
 			ValidateClientId(customerId);
 			ValidateProductList(productList);
 			ValidateOrder(orderId);
