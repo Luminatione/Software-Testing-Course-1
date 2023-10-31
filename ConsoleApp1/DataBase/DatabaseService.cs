@@ -127,12 +127,12 @@ namespace Database
             return _databaseContext.Products.FirstOrDefault(p => p.Id == productId);
         }
 
-        public async Task<List<Product>> GetAllOrdersAsync()
+        public async Task<List<Order>> GetAllOrdersAsync()
         {
             return await _databaseContext.Orders.ToListAsync();
         }
 
-        public async Task<List<Product>> GetAllClientsAsync()
+        public async Task<List<Client>> GetAllClientsAsync()
         {
             return await _databaseContext.Clients.ToListAsync();
         }
