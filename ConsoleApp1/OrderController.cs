@@ -21,7 +21,7 @@ namespace ConsoleApp1
 
 		private void ValidateProductList(List<Product> productList)
 		{
-			if (!productList.All(p => databaseService.GetAllProductsAsync().Select(e => e.Id).Contains(p.Id)))
+			if (!productList.All(p => databaseService.GetAllProductsAsync().Result.Select(e => e.Id).Contains(p.Id)))
 			{
 				throw new ArgumentException("Product doesn't exist");
 			}
@@ -29,7 +29,7 @@ namespace ConsoleApp1
 			bool canFullifyOrder = true;
 			foreach (var product in productList)
 			{
-				canFullifyOrder &= databaseService.GetProductById(product.Id).StoredAmount >= product.StoredAmount;
+				canFullifyOrder &= databaseService.GetProductByIdOrNull(product.Id).StoredAmount >= product.StoredAmount;
 			}
 
 			if (!canFullifyOrder)
@@ -40,7 +40,7 @@ namespace ConsoleApp1
 
 		private void ValidateOrder(int orderId)
 		{
-			if (databaseService.GetOrderById(orderId) == null)
+			if (databaseService.GetOrderByIdOrNull(orderId) == null)
 			{
 				throw new ArgumentException("No order with such Id");
 			}
@@ -50,45 +50,45 @@ namespace ConsoleApp1
 		{
 			ValidateClientId(clientId);
 			ValidateProductList(productList);
-			// Nie da rady, bo brak metody GetAllOrders w DatabaseService
-			int orderId = orderRepository.GetAllOrders().LastOrDefault()?.ID + 1 ?? 0;
+			List<Product> pl = databaseService.GetAllProductsAsync().Result;
+			int orderId = pl.LastOrDefault()?.Id + 1 ?? 0;
 			foreach (var product in productList)
 			{
-				productRepository.GetProductById(product.Id).StoredAmount -= product.StoredAmount;
+				databaseService.GetProductByIdOrNull(product.Id).StoredAmount -= product.StoredAmount;
 			}
-			orderRepository.AddOrder(new Order(orderId, clientId, productList, Order.OrderStatus.New));
+			databaseService.AddOrder(new Order(orderId, clientId, productList, Order.OrderStatus.New));
 		}
 
 		public Order GetOrderById(int orderId)
 		{
-			return databaseService.GetOrderById(orderId);
+			ValidateOrder(orderId);
+			return databaseService.GetOrderByIdOrNull(orderId);
 		}
 
 		public List<Order> GetAllOrders()
 		{
-			return databaseService.GetAllOrders();
+			return databaseService.GetAllOrdersAsync().Result;
 		}
 
 		public void CancelOrder(int orderId)
 		{
 			ValidateOrder(orderId);
-			foreach (var product in databaseService.GetOrderById(orderId).ProductList)
+			foreach (var product in databaseService.GetOrderByIdOrNull(orderId).ProductList)
 			{
-				databaseService.GetProductById(product.Id).StoredAmount += product.StoredAmount;
+				databaseService.GetProductByIdOrNull(product.Id).StoredAmount += product.StoredAmount;
 			}
 			databaseService.RemoveOrder(orderId);
 		}
 
 		public void UpdateOrder(int orderId, int customerId, List<Product> productList, Order.OrderStatus status)
 		{
-			// Nie da rady bo brak update'ów w DatabaseService
 			ValidateClientId(customerId);
 			ValidateProductList(productList);
 			ValidateOrder(orderId);
 			foreach (var product in productList)
 			{
-				productRepository.GetProductById(product.Id).StoredAmount -= product.StoredAmount -
-					orderRepository.GetOrderById(orderId).ProductList.Where(p => p.Id == product.Id).First()?.StoredAmount ?? 0;
+				databaseService.GetProductByIdOrNull(product.Id).StoredAmount -= product.StoredAmount -
+				databaseService.GetOrderByIdOrNull(orderId).ProductList.Where(p => p.Id == product.Id).First()?.StoredAmount ?? 0;
 			}
 			orderRepository.UpdateOrder(new Order(orderId, customerId, productList, status));
 		}
