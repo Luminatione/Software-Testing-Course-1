@@ -11,7 +11,7 @@ namespace ConsoleApp1.Repository.Interface
 	{
 		void AddProduct(Product product);
 		List<Product> GetAllProducts();
-		Product GetProductById(int productId);
+		Product? GetProductById(int productId);
 		void UpdateProduct(Product updatedProduct);
 		void DeleteProduct(int productId);
 	}

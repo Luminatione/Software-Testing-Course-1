@@ -30,8 +30,8 @@ namespace Database
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            //options.UseSqlite($"Data Source={DbPath}");
-            //base.OnConfiguring(options);
+            options.UseSqlite($"Data Source={DbPath}");
+            base.OnConfiguring(options);
         }
     }    
 }

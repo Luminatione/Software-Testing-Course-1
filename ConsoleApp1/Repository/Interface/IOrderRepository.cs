@@ -6,7 +6,7 @@ namespace ConsoleApp1.Repository.Interface
     {
         void AddOrder(Order order);
         List<Order> GetAllOrders();
-        Order GetOrderById(int orderId);
+        Order? GetOrderById(int orderId);
         void UpdateOrder(Order updatedOrder);
         void DeleteOrder(int orderId);
     }

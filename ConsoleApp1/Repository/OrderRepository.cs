@@ -27,7 +27,7 @@ namespace ConsoleApp1.Repository
 			return orders.ToList();
 		}
 
-		public Order GetOrderById(int orderId)
+		public Order? GetOrderById(int orderId)
 		{
 			return orders.FirstOrDefault(order => order.ID == orderId);
 		}

@@ -1,4 +1,4 @@
-﻿using ConsoleApp1;
+﻿using ConsoleApp1.Controllers;
 using ConsoleApp1.Model;
 using ConsoleApp1.Repository;
 
@@ -57,7 +57,7 @@ public class Program
     {
         List<Product> orderedProducts = new List<Product>();
 
-        Console.WriteLine("Avalible products:");
+        Console.WriteLine("Available products:");
         foreach (Product product in productRepository.GetAllProducts())
         {
             Console.WriteLine($"ID: {product.Id}, Name: {product.Name}, Price: {product.Price:C}, Stored Amount: {product.StoredAmount}");

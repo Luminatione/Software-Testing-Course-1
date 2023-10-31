@@ -27,7 +27,7 @@ namespace ConsoleApp1.Repository
 			return clients.ToList();
 		}
 
-		public Client GetClientById(int clientId)
+		public Client? GetClientById(int clientId)
 		{
 			return clients.FirstOrDefault(client => client.Id == clientId);
 		}

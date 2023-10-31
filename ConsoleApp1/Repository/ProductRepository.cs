@@ -27,7 +27,7 @@ namespace ConsoleApp1.Repository
 			return products.ToList();
 		}
 
-		public Product GetProductById(int productId)
+		public Product? GetProductById(int productId)
 		{
 			return products.FirstOrDefault(product => product.Id == productId);
 		}
