@@ -55,6 +55,7 @@ namespace Database
             }
 
             _databaseContext.Orders.Remove(orderToRemove);
+            _databaseContext.SaveChanges();
         }
 
         public void RemoveClient(int clientId)
@@ -66,6 +67,7 @@ namespace Database
             }
 
             _databaseContext.Clients.Remove(clientToRemove);
+            _databaseContext.SaveChanges();
         }
 
         public void RemoveProduct(int productId)
@@ -77,6 +79,7 @@ namespace Database
             }
 
             _databaseContext.Products.Remove(productToRemove);
+            _databaseContext.SaveChanges();
         }
 
         public Order? GetOrderByIdOrNull(int orderId)
