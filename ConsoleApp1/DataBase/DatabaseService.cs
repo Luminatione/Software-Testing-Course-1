@@ -82,6 +82,36 @@ namespace Database
             _databaseContext.SaveChanges();
         }
 
+        public void UpdateOrder(Order newOrder)
+        {
+            if (GetOrderByIdOrNull(newOrder.ID) == null)
+            {
+                throw new OrderNotFoundException(newOrder.ID);
+            }
+            RemoveOrder(newOrder.ID);
+            AddOrder(newOrder);
+        }
+
+        public void UpdateClient(Client newClient)
+        {
+            if (GetClientByIdOrNull(newClient.Id) == null)
+            {
+                throw new ClientNotFoundException(newClient.Id);
+            }
+            RemoveClient(newClient.Id);
+            AddClient(newClient);
+        }
+
+        public void UpdateProduct(Product newProduct)
+        {
+            if (GetProductByIdOrNull(newProduct.Id) == null)
+            {
+                throw new ProductNotFoundException(newProduct.Id);
+            }
+            RemoveProduct(newProduct.Id);
+            AddProduct(newProduct);
+        }
+
         public Order? GetOrderByIdOrNull(int orderId)
         {
             return _databaseContext.Orders.FirstOrDefault(o => o.ID == orderId);
