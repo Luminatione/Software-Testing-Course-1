@@ -1,3 +1,4 @@
+using ConsoleApp1.DataBase;
 using ConsoleApp1.Model;
 using ConsoleApp1.Repository.Interface;
 using Moq;
@@ -14,10 +15,12 @@ namespace ConsoleApp1.Tests
 			var orderRepositoryMock = new Mock<IOrderRepository>();
 			var clientRepositoryMock = new Mock<IClientRepository>();
 			var productRepositoryMock = new Mock<IProductRepository>();
+            var detabaseServiecve = new Mock<IDatabaseService> ();
 
-			var orderController = new OrderController(orderRepositoryMock.Object, clientRepositoryMock.Object, productRepositoryMock.Object);
+            var orderController = new OrderController (orderRepositoryMock.Object, clientRepositoryMock.Object,
+                                                        productRepositoryMock.Object, detabaseServiecve.Object);
 
-			var clientId = 1;
+            var clientId = 1;
 			var productId = 1;
 			var productList = new List<Product> { new Product(productId, "", 4, 5) };
 			var storedProduct = new Product(productId, "", 0, 10);
@@ -42,10 +45,12 @@ namespace ConsoleApp1.Tests
 			var orderRepositoryMock = new Mock<IOrderRepository>();
 			var clientRepositoryMock = new Mock<IClientRepository>();
 			var productRepositoryMock = new Mock<IProductRepository>();
+            var detabaseServiecve = new Mock<IDatabaseService> ();
 
-			var orderController = new OrderController(orderRepositoryMock.Object, clientRepositoryMock.Object, productRepositoryMock.Object);
+            var orderController = new OrderController (orderRepositoryMock.Object, clientRepositoryMock.Object,
+                                                        productRepositoryMock.Object, detabaseServiecve.Object);
 
-			var orderId = 1;
+            var orderId = 1;
 
 			orderRepositoryMock.Setup(repo => repo.GetOrderById(orderId)).Returns(new Order(orderId, 0, new List<Product>(), Order.OrderStatus.New));
 
@@ -63,10 +68,12 @@ namespace ConsoleApp1.Tests
 			var orderRepositoryMock = new Mock<IOrderRepository>();
 			var clientRepositoryMock = new Mock<IClientRepository>();
 			var productRepositoryMock = new Mock<IProductRepository>();
+            var detabaseServiecve = new Mock<IDatabaseService> ();
 
-			var orderController = new OrderController(orderRepositoryMock.Object, clientRepositoryMock.Object, productRepositoryMock.Object);
+            var orderController = new OrderController (orderRepositoryMock.Object, clientRepositoryMock.Object,
+                                                        productRepositoryMock.Object, detabaseServiecve.Object);
 
-			var orderId = 1;
+            var orderId = 1;
 			var customerId = 2;
 			var productId = 1;
 			var productList = new List<Product> { new Product(1, "", 4, 5) };
@@ -93,10 +100,12 @@ namespace ConsoleApp1.Tests
 			var orderRepositoryMock = new Mock<IOrderRepository>();
 			var clientRepositoryMock = new Mock<IClientRepository>();
 			var productRepositoryMock = new Mock<IProductRepository>();
+            var detabaseServiecve = new Mock<IDatabaseService> ();
 
-			var orderController = new OrderController(orderRepositoryMock.Object, clientRepositoryMock.Object, productRepositoryMock.Object);
+            var orderController = new OrderController (orderRepositoryMock.Object, clientRepositoryMock.Object,
+                                                        productRepositoryMock.Object, detabaseServiecve.Object);
 
-			var clientId = 1;
+            var clientId = 1;
 			var productId = 1;
 			var productList = new List<Product> { new Product(productId, "", 4, 5) };
 
@@ -114,10 +123,12 @@ namespace ConsoleApp1.Tests
 			var orderRepositoryMock = new Mock<IOrderRepository>();
 			var clientRepositoryMock = new Mock<IClientRepository>();
 			var productRepositoryMock = new Mock<IProductRepository>();
+            var detabaseServiecve = new Mock<IDatabaseService> ();
 
-			var orderController = new OrderController(orderRepositoryMock.Object, clientRepositoryMock.Object, productRepositoryMock.Object);
+            var orderController = new OrderController (orderRepositoryMock.Object, clientRepositoryMock.Object,
+                                                        productRepositoryMock.Object, detabaseServiecve.Object);
 
-			var clientId = 1;
+            var clientId = 1;
 			var productId = 1;
 			var productList = new List<Product> { new Product(productId, "", 4, 5) };
 			var product = new Product(productId + 1, "", 0, 10);
@@ -138,10 +149,12 @@ namespace ConsoleApp1.Tests
 			var orderRepositoryMock = new Mock<IOrderRepository>();
 			var clientRepositoryMock = new Mock<IClientRepository>();
 			var productRepositoryMock = new Mock<IProductRepository>();
+            var detabaseServiecve = new Mock<IDatabaseService> ();
 
-			var orderController = new OrderController(orderRepositoryMock.Object, clientRepositoryMock.Object, productRepositoryMock.Object);
+            var orderController = new OrderController (orderRepositoryMock.Object, clientRepositoryMock.Object,
+                                                        productRepositoryMock.Object, detabaseServiecve.Object);
 
-			var orderId = 1;
+            var orderId = 1;
 			var customerId = 2;
 			var productId = 1;
 			var productList = new List<Product> { new Product(1, "", 4, 5) };
@@ -164,10 +177,12 @@ namespace ConsoleApp1.Tests
 			var orderRepositoryMock = new Mock<IOrderRepository>();
 			var clientRepositoryMock = new Mock<IClientRepository>();
 			var productRepositoryMock = new Mock<IProductRepository>();
+            var detabaseServiecve = new Mock<IDatabaseService> ();
 
-			var orderController = new OrderController(orderRepositoryMock.Object, clientRepositoryMock.Object, productRepositoryMock.Object);
+            var orderController = new OrderController (orderRepositoryMock.Object, clientRepositoryMock.Object,
+                                                        productRepositoryMock.Object, detabaseServiecve.Object);
 
-			var orderId = 1;
+            var orderId = 1;
 			var customerId = 2;
 			var productId = 1;
 			var storedProduct = new Product(1, "", 4, 10);

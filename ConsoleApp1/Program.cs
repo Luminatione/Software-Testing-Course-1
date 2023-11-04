@@ -1,6 +1,7 @@
 ﻿using ConsoleApp1.Controllers;
 using ConsoleApp1.Model;
 using ConsoleApp1.Repository;
+using Database;
 
 public class Program
 {
@@ -184,8 +185,9 @@ public class Program
             ClientRepository clientRepository = new ClientRepository();
             ProductRepository productRepository = new ProductRepository();
             OrderRepository orderRepository = new OrderRepository();
+            DatabaseService databaseService = new DatabaseService ();
 
-            OrderController orderController = new OrderController(orderRepository, clientRepository, productRepository);
+            OrderController orderController = new OrderController(orderRepository, clientRepository, productRepository, databaseService);
 
             Console.WriteLine("MENU");
             Console.WriteLine("1. View orders");
