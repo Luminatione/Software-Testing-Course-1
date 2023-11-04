@@ -1,5 +1,7 @@
 ﻿using ConsoleApp1.Model;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using static ConsoleApp1.Model.Order;
 
 namespace ConsoleApp1.DataBase
 {
@@ -33,6 +35,6 @@ namespace ConsoleApp1.DataBase
             options.UseSqlite($"Data Source={DbPath}");
             base.OnConfiguring(options);
         }
-    }    
+    }
 }
 

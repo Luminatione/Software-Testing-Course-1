@@ -11,6 +11,7 @@ namespace ConsoleApp1.DataBase
         public DatabaseService()
         {
             _databaseContext = new DatabaseContext();
+            _databaseContext.Database.EnsureCreated ();
         }
 
         public void AddOrder(Order newOrder)
@@ -140,6 +141,14 @@ namespace ConsoleApp1.DataBase
         public async Task<List<Product>> GetAllProductsAsync()
         {
             return await _databaseContext.Products.ToListAsync();
+        }
+
+        public void CelarDatabse ()
+        {
+            _databaseContext.Orders.RemoveRange (_databaseContext.Orders);
+            _databaseContext.Clients.RemoveRange (_databaseContext.Clients);
+            _databaseContext.Products.RemoveRange (_databaseContext.Products);
+            _databaseContext.SaveChanges ();
         }
     }
 }

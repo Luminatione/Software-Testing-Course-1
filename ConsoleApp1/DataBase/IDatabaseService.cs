@@ -22,6 +22,8 @@ namespace ConsoleApp1.DataBase
         public Task<List<Order>> GetAllOrdersAsync();
         public Task<List<Client>> GetAllClientsAsync();
         public Task<List<Product>> GetAllProductsAsync();
+
+        public void CelarDatabse ();
     }
 }
 
