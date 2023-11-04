@@ -24,25 +24,26 @@ namespace ConsoleApp1.Tests
             var orderRepositoryMock = new Mock<IOrderRepository> ();
             var clientRepositoryMock = new Mock<IClientRepository> ();
             var productRepositoryMock = new Mock<IProductRepository> ();
-            var detabaseServiecve = new Mock<IDatabaseService> ();
+
+            DatabaseService detabaseServiecve = new DatabaseService ();
+            detabaseServiecve.CelarDatabse ();
 
             var orderController = new OrderController (orderRepositoryMock.Object, clientRepositoryMock.Object,
-                                                        productRepositoryMock.Object, detabaseServiecve.Object);
+                                                        productRepositoryMock.Object, detabaseServiecve);
 
             var clientId = 1;
             var productId = 1;
             var productList = new List<Product> { new Product (productId, "", 4, 5) };
-            var storedProduct = new Product (productId, "", 0, 10);
 
-            detabaseServiecve.Setup (db => db.GetClientByIdOrNull (clientId)).Returns(new Client (clientId, "", "", ""));
-            detabaseServiecve.Setup (db => db.GetAllProductsAsync ()).Returns (Task.FromResult(productList));
-            detabaseServiecve.Setup (db => db.GetProductByIdOrNull (productId)).Returns (storedProduct);
+            detabaseServiecve.AddClient (new Client (clientId, "", "", ""));
+            detabaseServiecve.AddProduct (productList[0]);
 
             // Act
             orderController.CreateOrder (clientId, productList);
 
             // Assert
-            detabaseServiecve.Verify (db => db.AddOrder (It.IsAny<Order> ()), Times.Once);
+            Assert.Equal<Order> (new Order (2, clientId, productList, Order.OrderStatus.New),
+                                 detabaseServiecve.GetOrderByIdOrNull (2));
         }
 
         [Fact]
@@ -52,7 +53,9 @@ namespace ConsoleApp1.Tests
             var orderRepositoryMock = new Mock<IOrderRepository> ();
             var clientRepositoryMock = new Mock<IClientRepository> ();
             var productRepositoryMock = new Mock<IProductRepository> ();
+
             DatabaseService detabaseServiecve = new DatabaseService ();
+            detabaseServiecve.CelarDatabse ();
 
             var orderController = new OrderController (orderRepositoryMock.Object, clientRepositoryMock.Object,
                                                         productRepositoryMock.Object, detabaseServiecve);
@@ -60,19 +63,13 @@ namespace ConsoleApp1.Tests
             var clientId = 1;
             var productId = 1;
             var productList = new List<Product> { new Product (productId, "", 4, 5) };
-            var storedProduct = new Product (productId, "", 0, 10);
 
-            //detabaseServiecve.Setup (db => db.GetClientByIdOrNull (clientId)).Returns (new Client (clientId, "", "", ""));
-            //detabaseServiecve.Setup (db => db.GetAllProductsAsync ()).Returns (Task.FromResult (productList));
-            //detabaseServiecve.Setup (db => db.GetProductByIdOrNull (productId)).Returns (storedProduct);
-
-            //var databaseObject = detabaseServiecve.Object;
+            detabaseServiecve.AddClient (new Client (clientId, "", "", ""));
+            detabaseServiecve.AddProduct (productList[0]);
 
             // Act
             orderController.CreateOrder (clientId, productList);
-            output.WriteLine ("dupa");
-            //orderController.CreateOrder (clientId, productList);
-            Order sameOrder = new Order (0, clientId, productList, Order.OrderStatus.New);
+            Order sameOrder = new Order (2, clientId, productList, Order.OrderStatus.New);
 
             // Assert
             Assert.Throws<OrderAlreadyExistsException> (() => detabaseServiecve.AddOrder (sameOrder));
