@@ -1,7 +1,7 @@
 ﻿using ConsoleApp1.Model;
 using Microsoft.EntityFrameworkCore;
 
-namespace Database
+namespace ConsoleApp1.DataBase
 {
     public class DatabaseContext : DbContext
     {

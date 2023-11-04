@@ -1,6 +1,6 @@
-using Database;
+using ConsoleApp1.DataBase;
 
-namespace Database
+namespace ConsoleApp1.DataBase
 {
     public class DatabaseException : Exception
     {
