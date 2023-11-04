@@ -1,4 +1,3 @@
-using Castle.Core.Resource;
 using ConsoleApp1.DataBase;
 using ConsoleApp1.Model;
 using ConsoleApp1.Repository.Interface;
@@ -26,15 +25,17 @@ namespace ConsoleApp1.Tests
 			var productList = new List<Product> { new Product(productId, "", 4, 5) };
 			var storedProduct = new Product(productId, "", 0, 10);
 
-            detabaseServiecve.Setup (db => db.GetClientByIdOrNull (clientId)).Returns (new Client (clientId, "", "", ""));
-            detabaseServiecve.Setup (db => db.GetAllProductsAsync ()).Returns (Task.FromResult (productList));
-            detabaseServiecve.Setup (db => db.GetProductByIdOrNull (productId)).Returns (storedProduct);
 
-            // Act
-            orderController.CreateOrder(clientId, productList);
+			clientRepositoryMock.Setup(repo => repo.GetClientById(clientId)).Returns(new Client(clientId, "", "", ""));
+			productRepositoryMock.Setup(repo => repo.GetAllProducts()).Returns(new List<Product> { storedProduct });
+			productRepositoryMock.Setup(repo => repo.GetProductById(productId)).Returns(storedProduct);
+			orderRepositoryMock.Setup(repo => repo.GetAllOrders()).Returns(new List<Order> { new Order(0, clientId, new List<Product>(), Order.OrderStatus.Completed) });
 
-            // Assert
-            detabaseServiecve.Verify (db => db.AddOrder(It.IsAny<Order>()), Times.Once);
+			// Act
+			orderController.CreateOrder(clientId, productList);
+
+			// Assert
+			orderRepositoryMock.Verify(repo => repo.AddOrder(It.IsAny<Order>()), Times.Once);
 		}
 
 		[TestMethod]
@@ -51,14 +52,13 @@ namespace ConsoleApp1.Tests
 
             var orderId = 1;
 
-            detabaseServiecve.Setup (db => db.GetOrderByIdOrNull (orderId))
-                .Returns (new Order (orderId, 0, new List<Product> (), Order.OrderStatus.New));
+			orderRepositoryMock.Setup(repo => repo.GetOrderById(orderId)).Returns(new Order(orderId, 0, new List<Product>(), Order.OrderStatus.New));
 
-            // Act
-            orderController.CancelOrder(orderId);
+			// Act
+			orderController.CancelOrder(orderId);
 
-            // Assert
-            detabaseServiecve.Verify(db => db.RemoveOrder (orderId), Times.Once);
+			// Assert
+			orderRepositoryMock.Verify(repo => repo.DeleteOrder(orderId), Times.Once);
 		}
 
 		[TestMethod]
@@ -80,17 +80,17 @@ namespace ConsoleApp1.Tests
 			var status = Order.OrderStatus.InProgress;
 			var storedProduct = new Product(1, "", 4, 10);
 
-            detabaseServiecve.Setup (db => db.GetClientByIdOrNull (customerId)).Returns (new Client (customerId, "", "", ""));
-            detabaseServiecve.Setup (db => db.GetAllProductsAsync ()).Returns (Task.FromResult (new List<Product> { storedProduct }));
-            detabaseServiecve.Setup (db => db.GetProductByIdOrNull (productId)).Returns (storedProduct);
-            detabaseServiecve.Setup (db => db.GetOrderByIdOrNull (orderId))
-                .Returns (new Order (orderId, customerId, productList, Order.OrderStatus.New));
 
-            // Act
-            orderController.UpdateOrder(orderId, customerId, productList, status);
+			clientRepositoryMock.Setup(repo => repo.GetClientById(customerId)).Returns(new Client(customerId, "", "", ""));
+			productRepositoryMock.Setup(repo => repo.GetAllProducts()).Returns(new List<Product> { storedProduct });
+			productRepositoryMock.Setup(repo => repo.GetProductById(productId)).Returns(storedProduct);
+			orderRepositoryMock.Setup(repo => repo.GetOrderById(orderId)).Returns(new Order(orderId, customerId, productList, Order.OrderStatus.New));
 
-            // Assert
-            detabaseServiecve.Verify(db => db.UpdateOrder (It.IsAny<Order>()), Times.Once);
+			// Act
+			orderController.UpdateOrder(orderId, customerId, productList, status);
+
+			// Assert
+			orderRepositoryMock.Verify(repo => repo.UpdateOrder(It.IsAny<Order>()), Times.Once);
 		}
 
 		[TestMethod]
@@ -109,8 +109,8 @@ namespace ConsoleApp1.Tests
 			var productId = 1;
 			var productList = new List<Product> { new Product(productId, "", 4, 5) };
 
-			detabaseServiecve.Setup(db => db.GetClientByIdOrNull(clientId)).Returns((Client)null);
-			detabaseServiecve.Setup (db => db.GetAllProductsAsync ()).Returns(Task.FromResult(new List<Product> ()));
+			clientRepositoryMock.Setup(repo => repo.GetClientById(clientId)).Returns((Client)null);
+			productRepositoryMock.Setup(repo => repo.GetAllProducts()).Returns(new List<Product>());
 
 			// Act and Assert
 			Assert.ThrowsException<ArgumentException>(() => orderController.CreateOrder(clientId, productList));
@@ -133,17 +133,17 @@ namespace ConsoleApp1.Tests
 			var productList = new List<Product> { new Product(productId, "", 4, 5) };
 			var product = new Product(productId + 1, "", 0, 10);
 
-            detabaseServiecve.Setup (db => db.GetClientByIdOrNull (clientId)).Returns (new Client (clientId, "", "", ""));
-            detabaseServiecve.Setup (db => db.GetAllProductsAsync ()).Returns (Task.FromResult (productList));
-            detabaseServiecve.Setup (db => db.GetProductByIdOrNull (productId)).Returns ((Product)null);
-			detabaseServiecve.Setup (db => db.GetAllOrdersAsync ()).Returns (Task.FromResult (new List<Order> ()));
+			clientRepositoryMock.Setup(repo => repo.GetClientById(clientId)).Returns(new Client(clientId, "", "", ""));
+			productRepositoryMock.Setup(repo => repo.GetAllProducts()).Returns(productList);
+			productRepositoryMock.Setup(repo => repo.GetProductById(productId)).Returns((Product)null);
+			orderRepositoryMock.Setup(repo => repo.GetAllOrders()).Returns(new List<Order>());
 
-            // Act and Assert
-            Assert.ThrowsException<ArgumentException>(() => orderController.CreateOrder(clientId, new List<Product> { product }));
+			// Act and Assert
+			Assert.ThrowsException<ArgumentException>(() => orderController.CreateOrder(clientId, new List<Product> { product }));
 		}
 
 		[TestMethod]
-		public void UpdateOrder_InvalidClient_NullReferenceException ()
+		public void UpdateOrder_InvalidClient_ThrowsArgumentException()
 		{
 			// Arrange
 			var orderRepositoryMock = new Mock<IOrderRepository>();
@@ -161,14 +161,13 @@ namespace ConsoleApp1.Tests
 			var status = Order.OrderStatus.InProgress;
 			var storedProduct = new Product(1, "", 4, 10);
 
-            detabaseServiecve.Setup (db => db.GetClientByIdOrNull (customerId)).Returns (new Client (customerId, "", "", ""));
-            detabaseServiecve.Setup (db => db.GetAllProductsAsync ()).Returns (Task.FromResult (productList));
-            detabaseServiecve.Setup (db => db.GetProductByIdOrNull (productId)).Returns ((Product)null);
-            detabaseServiecve.Setup (db => db.GetOrderByIdOrNull (orderId))
-                .Returns (new Order (orderId, customerId, productList, Order.OrderStatus.New));
+			clientRepositoryMock.Setup(repo => repo.GetClientById(customerId)).Returns((Client)null);
+			productRepositoryMock.Setup(repo => repo.GetAllProducts()).Returns(new List<Product> { storedProduct });
+			productRepositoryMock.Setup(repo => repo.GetProductById(productId)).Returns(storedProduct);
+			orderRepositoryMock.Setup(repo => repo.GetOrderById(orderId)).Returns(new Order(orderId, customerId, productList, Order.OrderStatus.New));
 
-            // Act and Assert
-            Assert.ThrowsException<NullReferenceException> (() => orderController.UpdateOrder(orderId, customerId, productList, status));
+			// Act and Assert
+			Assert.ThrowsException<ArgumentException>(() => orderController.UpdateOrder(orderId, customerId, productList, status));
 		}
 
 		[TestMethod]
@@ -191,14 +190,13 @@ namespace ConsoleApp1.Tests
 			var status = Order.OrderStatus.InProgress;
 			var newProduct = new Product(storedProduct.Id++, "", 3, 3);
 
-            detabaseServiecve.Setup (db => db.GetClientByIdOrNull (customerId)).Returns (new Client (customerId, "", "", ""));
-            detabaseServiecve.Setup (db => db.GetAllProductsAsync ()).Returns (Task.FromResult (productList));
-            detabaseServiecve.Setup (db => db.GetProductByIdOrNull (productId)).Returns ((Product)null);
-            detabaseServiecve.Setup (db => db.GetOrderByIdOrNull (orderId))
-                .Returns (new Order (orderId, customerId, productList, Order.OrderStatus.New));
+			clientRepositoryMock.Setup(repo => repo.GetClientById(customerId)).Returns(new Client(customerId, "", "", ""));
+			productRepositoryMock.Setup(repo => repo.GetAllProducts()).Returns(productList);
+			productRepositoryMock.Setup(repo => repo.GetProductById(productId)).Returns(storedProduct);
+			orderRepositoryMock.Setup(repo => repo.GetOrderById(orderId)).Returns(new Order(orderId, customerId, productList, Order.OrderStatus.New));
 
-            // Act and Assert
-            Assert.ThrowsException<ArgumentException>(() => orderController.UpdateOrder(orderId, customerId, new List<Product> { newProduct }, status));
+			// Act and Assert
+			Assert.ThrowsException<ArgumentException>(() => orderController.UpdateOrder(orderId, customerId, new List<Product> { newProduct }, status));
 		}
 	}
 }

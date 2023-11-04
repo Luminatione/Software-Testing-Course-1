@@ -1,7 +1,6 @@
 ﻿using ConsoleApp1.Model;
 using ConsoleApp1.Repository.Interface;
 using ConsoleApp1.DataBase;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
 namespace ConsoleApp1.Tests
