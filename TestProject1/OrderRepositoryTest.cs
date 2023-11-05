@@ -82,7 +82,7 @@ namespace ConsoleApp1.Repository.Tests
 			// Assert
 			var result = orderRepository.GetOrderById(1);
 			Assert.AreEqual(updatedOrder.Status, result.Status);
-			Assert.AreEqual(updatedOrder.ProductList, result.ProductList);
+			Assert.AreEqual(updatedOrder.Products, result.Products);
 			Assert.AreEqual(updatedOrder.CustomerID, result.CustomerID);
 		}
 

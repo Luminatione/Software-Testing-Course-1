@@ -18,7 +18,9 @@ namespace ConsoleApp1.Model
 
 		public int ID { get; set; } = id;
 		public int CustomerID { get; set; } = customerId;
-		public List<Product> ProductList { get; set; } = productList;
+		public List<Product> Products { get; set; } = productList;
 		public OrderStatus Status { get; set; } = status;
+
+		public Order() : this(0, 0, new List<Product>(), OrderStatus.New) { }
 	}
 }

@@ -1,6 +1,8 @@
 ﻿using ConsoleApp1.Controllers;
+using ConsoleApp1.DataBase;
 using ConsoleApp1.Model;
 using ConsoleApp1.Repository;
+using Database;
 using System.ComponentModel;
 
 public class Program
@@ -55,7 +57,7 @@ public class Program
         foreach (Order order in orders)
         {
             Console.WriteLine($"ID: {order.ID}, CustomerID: {order.CustomerID}, Status: {order.Status}, Products:");
-            foreach (Product product in order.ProductList)
+            foreach (Product product in order.Products)
             {
                 Console.WriteLine($"-{product.Name}, Quantity: {product.StoredAmount}");
             }
@@ -218,7 +220,7 @@ public class Program
                     foreach (Order obj in orderController.GetAllOrders())
                     {
                         Console.WriteLine($"ID: {obj.ID}, CustomerID: {obj.CustomerID}, Status: {obj.Status}, Products:");
-                        foreach (Product product in obj.ProductList)
+                        foreach (Product product in obj.Products)
                         {
                             Console.WriteLine($"-{product.Name}, Quantity: {product.StoredAmount}");
                         }
@@ -240,7 +242,7 @@ public class Program
                     order = orderController.GetAllOrders().FirstOrDefault(o => o.ID == orderToUpdateId);
                     Console.WriteLine("Choosen order:");
                     Console.WriteLine($"ID: {order.ID}, CustomerID: {order.CustomerID}, Status: {order.Status}, Products:");
-                    foreach (Product product in order.ProductList)
+                    foreach (Product product in order.Products)
                     {
                         Console.WriteLine($"-{product.Name}, Quantity: {product.StoredAmount}");
                     }
@@ -263,7 +265,7 @@ public class Program
                     }
                     else
                     {
-                        productList = order.ProductList;
+                        productList = order.Products;
                     }
                     Console.WriteLine("Want to chagne status? (Y/N)");
                     input = Console.ReadKey().KeyChar;
@@ -335,7 +337,7 @@ public class Program
                             second_name = Console.ReadLine();
                             Console.WriteLine("Enter email");
                             email = Console.ReadLine();
-                            id = clientController.GetAllClients().OrderByDescending(client => client.Id).FirstOrDefault().Id + 1;
+                            id = clientController.GetAllClients().OrderByDescending(client => client.Id).FirstOrDefault()?.Id + 1 ?? 0;
                             clientController.CreateClient(id, name, second_name, email);
                             Console.WriteLine("Client created succesfully!");
                             break;
@@ -424,7 +426,7 @@ public class Program
                             Console.WriteLine("Enter stored amount");
                             amount = Console.ReadLine();
                             int.TryParse(amount, out int amount_decimal);
-                            id = productController.GetAllProducts().OrderByDescending(product => product.Id).FirstOrDefault().Id + 1;
+                            id = productController.GetAllProducts().OrderByDescending(product => product.Id).FirstOrDefault()?.Id + 1 ?? 0;
                             productController.CreateProduct(id, name, price_decimal, amount_decimal);
                             Console.WriteLine("Product created succesfully!");
                             break;
@@ -450,7 +452,7 @@ public class Program
                             Console.WriteLine("Enter new stored amount");
                             amount = Console.ReadLine();
                             int.TryParse(amount, out int amount_decimal);
-                            productController.CreateProduct(id, name, price_decimal, amount_decimal);
+                            productController.UpdateProduct(id, name, price_decimal, amount_decimal);
                             Console.WriteLine("Product updated succesfully!");
                             break;
                         }
@@ -484,17 +486,14 @@ public class Program
         Order? order;
         char input;
         Order.OrderStatus status;
+        IDatabaseService context = new DatabaseService();
 
         while (true)
         {
-            // Trzeba wstrzykiwanie zrobić elegancko
-            ClientRepository clientRepository = new ClientRepository();
-            ProductRepository productRepository = new ProductRepository();
-            OrderRepository orderRepository = new OrderRepository();
+            ClientController clientController = new ClientController(context);
+            ProductController productController = new ProductController(context);
+            OrderController orderController = new OrderController(context);
 
-            OrderController orderController = new OrderController(orderRepository, clientRepository, productRepository);
-            ClientController clientController = new ClientController(clientRepository);
-            ProductController productController = new ProductController(productRepository);
 
             Console.WriteLine("MENU");
             Console.WriteLine("1. Orders");
