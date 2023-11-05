@@ -113,36 +113,6 @@ namespace ConsoleApp1.DataBase
             AddProduct(newProduct);
         }
 
-        public void UpdateOrder(Order newOrder)
-        {
-            if (GetOrderByIdOrNull(newOrder.ID) == null)
-            {
-                throw new OrderNotFoundException(newOrder.ID);
-            }
-            RemoveOrder(newOrder.ID);
-            AddOrder(newOrder);
-        }
-
-        public void UpdateClient(Client newClient)
-        {
-            if (GetClientByIdOrNull(newClient.Id) == null)
-            {
-                throw new ClientNotFoundException(newClient.Id);
-            }
-            RemoveClient(newClient.Id);
-            AddClient(newClient);
-        }
-
-        public void UpdateProduct(Product newProduct)
-        {
-            if (GetProductByIdOrNull(newProduct.Id) == null)
-            {
-                throw new ProductNotFoundException(newProduct.Id);
-            }
-            RemoveProduct(newProduct.Id);
-            AddProduct(newProduct);
-        }
-
         public Order? GetOrderByIdOrNull(int orderId)
         {
             return _databaseContext.Orders.FirstOrDefault(o => o.ID == orderId);
@@ -156,16 +126,6 @@ namespace ConsoleApp1.DataBase
         public Product? GetProductByIdOrNull(int productId)
         {
             return _databaseContext.Products.FirstOrDefault(p => p.Id == productId);
-        }
-
-        public async Task<List<Order>> GetAllOrdersAsync()
-        {
-            return await _databaseContext.Orders.ToListAsync();
-        }
-
-        public async Task<List<Client>> GetAllClientsAsync()
-        {
-            return await _databaseContext.Clients.ToListAsync();
         }
 
         public async Task<List<Product>> GetAllProductsAsync()

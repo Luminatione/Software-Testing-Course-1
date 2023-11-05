@@ -4,6 +4,8 @@ using ConsoleApp1.DataBase;
 using Moq;
 using Microsoft.VisualStudio.TestPlatform.Utilities;
 using Xunit.Abstractions;
+using Database;
+using ConsoleApp1.Controllers;
 
 namespace ConsoleApp1.Tests
 {
@@ -452,7 +454,7 @@ namespace ConsoleApp1.Tests
             // Assert:
             var updatedOrder = databaseService.GetOrderByIdOrNull(1);
             Assert.NotNull(updatedOrder);
-            Assert.Equal(updatedProductList, updatedOrder.ProductList);
+            Assert.Equal(updatedProductList, updatedOrder.Products);
         }
 
         [Fact]
@@ -498,7 +500,7 @@ namespace ConsoleApp1.Tests
             // Assert:
             var updatedOrder = databaseService.GetOrderByIdOrNull(1);
             Assert.NotNull(updatedOrder);
-            Assert.Equal(updatedProductList, updatedOrder.ProductList);
+            Assert.Equal(updatedProductList, updatedOrder.Products);
         }
 
         [Fact]

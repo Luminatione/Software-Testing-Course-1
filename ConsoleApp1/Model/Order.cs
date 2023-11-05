@@ -19,7 +19,7 @@ namespace ConsoleApp1.Model
 
 		public int ID { get; set; }
 		public int CustomerID { get; set; }
-		public List<Product> ProductList = new List<Product>();
+		public List<Product> Products = new List<Product>();
 		public OrderStatus Status { get; set; }
 
 		public Order()
@@ -31,7 +31,7 @@ namespace ConsoleApp1.Model
 		{
 			ID = id;
 			CustomerID = customerId;
-			ProductList = productList;
+			Products = productList;
 			Status = status;
 		}
 
@@ -44,7 +44,7 @@ namespace ConsoleApp1.Model
 
             return this.ID == other.ID
                 && this.CustomerID == other.CustomerID
-                && this.ProductList.Equals (other.ProductList)
+                && this.Products.Equals (other.Products)
                 && this.Status == other.Status;
         }
     }

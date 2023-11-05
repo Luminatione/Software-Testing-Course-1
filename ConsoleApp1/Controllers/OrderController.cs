@@ -1,5 +1,8 @@
-﻿using ConsoleApp1.Model;
+﻿using ConsoleApp1.DataBase;
+using ConsoleApp1.Model;
 using ConsoleApp1.Repository.Interface;
+using Database;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,11 +11,11 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp1.Controllers
 {
-    public class OrderController(IOrderRepository orderRepository, IClientRepository clientRepository, IProductRepository productRepository)
+    public class OrderController(IDatabaseService context)
     {
         private void ValidateClientId(int clientId)
         {
-            if (clientRepository.GetClientById(clientId) == null)
+            if (context.GetClientByIdOrNull(clientId) == null)
             {
                 throw new ArgumentException("Client doesn't exist");
             }
@@ -20,26 +23,26 @@ namespace ConsoleApp1.Controllers
 
         private void ValidateProductList(List<Product> productList)
         {
-            if (!productList.All(p => productRepository.GetAllProducts().Select(e => e.Id).Contains(p.Id)))
+            if (!productList.All(p => context.GetAllProducts().Select(e => e.Id).Contains(p.Id)))
             {
                 throw new ArgumentException("Product doesn't exist");
             }
 
-            bool canFullifyOrder = true;
+            bool canFulfillOrder = true;
             foreach (var product in productList)
             {
-                canFullifyOrder &= productRepository.GetProductById(product.Id).StoredAmount >= product.StoredAmount;
+                canFulfillOrder &= context.GetProductByIdOrNull(product.Id).StoredAmount >= product.StoredAmount;
             }
 
-            if (!canFullifyOrder)
+            if (!canFulfillOrder)
             {
-                throw new ArgumentException("Order cannot be fullified");
+                throw new ArgumentException("Order cannot be fulfilled");
             }
         }
 
         private void ValidateOrder(int orderId)
         {
-            if (orderRepository.GetOrderById(orderId) == null)
+            if (GetOrderById(orderId) == null)
             {
                 throw new ArgumentException("No order with such Id");
             }
@@ -49,32 +52,34 @@ namespace ConsoleApp1.Controllers
         {
             ValidateClientId(clientId);
             ValidateProductList(productList);
-            int orderId = orderRepository.GetAllOrders().LastOrDefault()?.ID + 1 ?? 0;
+            int orderId = GetAllOrders().LastOrDefault()?.ID + 1 ?? 0;
             foreach (var product in productList)
             {
-                productRepository.GetProductById(product.Id).StoredAmount -= product.StoredAmount;
+                var storedProduct = context.GetProductByIdOrNull(product.Id);
+                storedProduct.StoredAmount -= product.StoredAmount;
+                context.UpdateProduct(storedProduct);
             }
-            orderRepository.AddOrder(new Order(orderId, clientId, productList, Order.OrderStatus.New));
+            context.AddOrder(new Order(orderId, clientId, productList, Order.OrderStatus.New));
         }
 
         public Order? GetOrderById(int orderId)
         {
-            return orderRepository.GetOrderById(orderId);
+            return context.GetOrderByIdOrNull(orderId);
         }
 
         public List<Order> GetAllOrders()
         {
-            return orderRepository.GetAllOrders();
+            return context.GetAllOrders();
         }
 
         public void CancelOrder(int orderId)
         {
             ValidateOrder(orderId);
-            foreach (var product in orderRepository.GetOrderById(orderId).ProductList)
+            foreach (var product in GetOrderById(orderId).Products)
             {
-                productRepository.GetProductById(product.Id).StoredAmount += product.StoredAmount;
+                context.GetProductByIdOrNull(product.Id).StoredAmount += product.StoredAmount;
             }
-            orderRepository.DeleteOrder(orderId);
+            context.RemoveOrder(orderId);
         }
 
         public void UpdateOrder(int orderId, int customerId, List<Product> productList, Order.OrderStatus status)
@@ -82,12 +87,16 @@ namespace ConsoleApp1.Controllers
             ValidateClientId(customerId);
             ValidateProductList(productList);
             ValidateOrder(orderId);
+            Order order = GetOrderById(orderId);
+            order.CustomerID = customerId;
+            order.Products = productList;
+            order.Status = status;
             foreach (var product in productList)
             {
-                productRepository.GetProductById(product.Id).StoredAmount -= product.StoredAmount -
-                    orderRepository.GetOrderById(orderId).ProductList.Where(p => p.Id == product.Id).First()?.StoredAmount ?? 0;
+                context.GetProductByIdOrNull(product.Id).StoredAmount -= product.StoredAmount -
+                     GetOrderById(orderId).Products.Where(p => p.Id == product.Id).First()?.StoredAmount ?? 0;
             }
-            orderRepository.UpdateOrder(new Order(orderId, customerId, productList, status));
+            context.UpdateOrder(order);
         }
     }
 }

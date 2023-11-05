@@ -19,8 +19,6 @@ namespace ConsoleApp1.DataBase
         public Order? GetOrderByIdOrNull(int orderId);
         public Client? GetClientByIdOrNull(int clientId);
         public Product? GetProductByIdOrNull(int productId);
-        public Task<List<Order>> GetAllOrdersAsync();
-        public Task<List<Client>> GetAllClientsAsync();
         public Task<List<Product>> GetAllProductsAsync();
 
         public void CelarDatabse ();

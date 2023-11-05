@@ -33,7 +33,18 @@ namespace ConsoleApp1.DataBase
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             options.UseSqlite($"Data Source={DbPath}");
+            options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
             base.OnConfiguring(options);
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Product>().HasKey(p => p.Id);
+            modelBuilder.Entity<Order>().HasKey(o => o.ID);
+            modelBuilder.Entity<Client>().HasKey(c => c.Id);
+
+            modelBuilder.Entity<Order>().HasMany(o => o.Products).WithOne().OnDelete(DeleteBehavior.Restrict);
+            base.OnModelCreating(modelBuilder);
         }
     }
 }

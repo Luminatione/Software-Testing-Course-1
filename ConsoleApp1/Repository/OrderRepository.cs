@@ -39,7 +39,7 @@ namespace ConsoleApp1.Repository
 			if (existingOrder != null)
 			{
 				existingOrder.CustomerID = updatedOrder.CustomerID;
-				existingOrder.ProductList = updatedOrder.ProductList;
+				existingOrder.Products = updatedOrder.Products;
 				existingOrder.Status = updatedOrder.Status;
 			}
 			else

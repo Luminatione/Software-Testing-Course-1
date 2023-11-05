@@ -1,5 +1,3 @@
-using Castle.Core.Resource;
-using ConsoleApp1.DataBase;
 using ConsoleApp1.Model;
 using ConsoleApp1.Repository.Interface;
 using Moq;
