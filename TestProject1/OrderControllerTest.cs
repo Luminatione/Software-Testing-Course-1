@@ -4,7 +4,7 @@ using ConsoleApp1.Model;
 using ConsoleApp1.Repository.Interface;
 using Moq;
 
-namespace ConsoleApp1.Tests
+namespace ConsoleApp1.Controllers.Tests
 {
 	[TestClass]
 	public class OrderControllerTests
