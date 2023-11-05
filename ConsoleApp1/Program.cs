@@ -1,13 +1,38 @@
 ﻿using ConsoleApp1.Controllers;
+using ConsoleApp1.DataBase;
 using ConsoleApp1.Model;
 using ConsoleApp1.Repository;
+using Database;
+using System.ComponentModel;
 
 public class Program
 {
-    private static int getClient(ClientRepository clientRepository)
+    private static int getProduct(List<Product> products)
+    {
+        Console.WriteLine("List of products:");
+        foreach (Product product in products)
+        {
+            Console.WriteLine($"ID: {product.Id}, Name: {product.Name}, Price: {product.Price}, Stored Amount: {product.StoredAmount}");
+        }
+        while (true)
+        {
+            Console.WriteLine($"Enter the ID of product:");
+            string productIdInput = Console.ReadLine();
+            if (int.TryParse(productIdInput, out int productId))
+            {
+                return productId;
+            }
+            else
+            {
+                Console.WriteLine("Client with the given ID not found. Please try again.");
+                continue;
+            }
+        }
+    }
+    private static int getClient(List<Client> clients)
     {
         Console.WriteLine("List of clients:");
-        foreach (Client client in clientRepository.GetAllClients())
+        foreach (Client client in clients)
         {
             Console.WriteLine($"ID: {client.Id}, Name: {client.Name}, SecondName: {client.SecondName}, Email: {client.Email}");
         }
@@ -26,13 +51,13 @@ public class Program
             }
         }
     }
-    private static int getOrder(OrderRepository orderRepository)
+    private static int getOrder(List<Order> orders)
     {
         Console.WriteLine("List of orders:");
-        foreach (Order order in orderRepository.GetAllOrders())
+        foreach (Order order in orders)
         {
             Console.WriteLine($"ID: {order.ID}, CustomerID: {order.CustomerID}, Status: {order.Status}, Products:");
-            foreach (Product product in order.ProductList)
+            foreach (Product product in order.Products)
             {
                 Console.WriteLine($"-{product.Name}, Quantity: {product.StoredAmount}");
             }
@@ -53,12 +78,12 @@ public class Program
         }
     }
 
-    private static List<Product> getProducts(ProductRepository productRepository)
+    private static List<Product> getProducts(List<Product> products)
     {
         List<Product> orderedProducts = new List<Product>();
 
         Console.WriteLine("Available products:");
-        foreach (Product product in productRepository.GetAllProducts())
+        foreach (Product product in products)
         {
             Console.WriteLine($"ID: {product.Id}, Name: {product.Name}, Price: {product.Price:C}, Stored Amount: {product.StoredAmount}");
         }
@@ -80,7 +105,7 @@ public class Program
 
                     if (int.TryParse(productIdInput, out int productId))
                     {
-                        Product selectedProduct = productRepository.GetProductById(productId);
+                        Product selectedProduct = products.FirstOrDefault(p => p.Id == productId);
 
                         if (selectedProduct != null)
                         {
@@ -166,28 +191,19 @@ public class Program
         }
     }
 
-
-
-    private static void Main(string[] args)
+    private static void orderMenu(OrderController orderController, ClientController clientController, ProductController productController)
     {
-        List<Product>? productList;
-        int clientId;
-        int orderToUpdateId;
-        int orderToDeleteId;
-        Order? order;
-        char input;
-        Order.OrderStatus status;
-
         while (true)
         {
-            // Trzeba wstrzykiwanie zrobić elegancko
-            ClientRepository clientRepository = new ClientRepository();
-            ProductRepository productRepository = new ProductRepository();
-            OrderRepository orderRepository = new OrderRepository();
+            List<Product>? productList;
+            int clientId;
+            int orderToUpdateId;
+            int orderToDeleteId;
+            Order? order;
+            char input;
+            Order.OrderStatus status;
 
-            OrderController orderController = new OrderController(orderRepository, clientRepository, productRepository);
-
-            Console.WriteLine("MENU");
+            Console.WriteLine("ORDER MENU");
             Console.WriteLine("1. View orders");
             Console.WriteLine("2. Create order");
             Console.WriteLine("3. Update order");
@@ -195,16 +211,16 @@ public class Program
             Console.WriteLine("5. Exit");
 
             char key = Console.ReadKey().KeyChar;
+            Console.Clear();
 
             switch (key)
             {
                 case '1':
-                    Console.Clear();
                     Console.WriteLine("List of orders:");
-                    foreach (Order obj in orderRepository.GetAllOrders())
+                    foreach (Order obj in orderController.GetAllOrders())
                     {
                         Console.WriteLine($"ID: {obj.ID}, CustomerID: {obj.CustomerID}, Status: {obj.Status}, Products:");
-                        foreach (Product product in obj.ProductList)
+                        foreach (Product product in obj.Products)
                         {
                             Console.WriteLine($"-{product.Name}, Quantity: {product.StoredAmount}");
                         }
@@ -213,22 +229,20 @@ public class Program
                     break;
 
                 case '2':
-                    Console.Clear();
                     Console.WriteLine("Creating order");
-                    productList = getProducts(productRepository);
-                    clientId = getClient(clientRepository);
+                    productList = getProducts(productController.GetAllProducts());
+                    clientId = getClient(clientController.GetAllClients());
                     orderController.CreateOrder(clientId, productList);
                     Console.WriteLine("Order created succesfully");
                     break;
 
                 case '3':
-                    Console.Clear();
                     Console.WriteLine("Updating order");
-                    orderToUpdateId = getOrder(orderRepository);
-                    order = orderRepository.GetOrderById(orderToUpdateId);
+                    orderToUpdateId = getOrder(orderController.GetAllOrders());
+                    order = orderController.GetAllOrders().FirstOrDefault(o => o.ID == orderToUpdateId);
                     Console.WriteLine("Choosen order:");
                     Console.WriteLine($"ID: {order.ID}, CustomerID: {order.CustomerID}, Status: {order.Status}, Products:");
-                    foreach (Product product in order.ProductList)
+                    foreach (Product product in order.Products)
                     {
                         Console.WriteLine($"-{product.Name}, Quantity: {product.StoredAmount}");
                     }
@@ -237,7 +251,7 @@ public class Program
                     input = Console.ReadKey().KeyChar;
                     if (input == 'Y')
                     {
-                        clientId = getClient(clientRepository);
+                        clientId = getClient(clientController.GetAllClients());
                     }
                     else
                     {
@@ -247,11 +261,11 @@ public class Program
                     input = Console.ReadKey().KeyChar;
                     if (input == 'Y')
                     {
-                        productList = getProducts(productRepository);
+                        productList = getProducts(productController.GetAllProducts());
                     }
                     else
                     {
-                        productList = order.ProductList;
+                        productList = order.Products;
                     }
                     Console.WriteLine("Want to chagne status? (Y/N)");
                     input = Console.ReadKey().KeyChar;
@@ -267,21 +281,249 @@ public class Program
                     break;
 
                 case '4':
-                    Console.Clear();
                     Console.WriteLine("Deleting order");
-                    orderToDeleteId = getOrder(orderRepository);
+                    orderToDeleteId = getOrder(orderController.GetAllOrders());
                     orderController.CancelOrder(orderToDeleteId);
                     Console.WriteLine("Order deleted succesfully");
                     break;
 
                 case '5':
-                    Console.Clear();
                     return;
 
                 default:
-                    Console.Clear();
                     Console.WriteLine("Invalid choice. Please choose a number from 1 to 5.");
                     continue;
+            }
+        }
+
+    }
+
+    private static void clientMenu(ClientController clientController)
+    {
+        string name;
+        string second_name;
+        string email;
+        int id;
+        while (true)
+        {
+            Console.WriteLine("CLIENT MENU");
+            Console.WriteLine("1. View clients");
+            Console.WriteLine("2. Add client");
+            Console.WriteLine("3. Update client");
+            Console.WriteLine("4. Delete client");
+            Console.WriteLine("5. Exit");
+
+            char key = Console.ReadKey().KeyChar;
+            Console.Clear();
+
+            switch (key)
+            {
+                case '1':
+                    Console.WriteLine("List of clients:");
+                    foreach (Client client in clientController.GetAllClients())
+                    {
+                        Console.WriteLine($"ID: {client.Id}  Name: {client.Name} SecondName: {client.SecondName} Email: {client.Email}");
+                    }
+                    break;
+                case '2':
+                    Console.WriteLine("Creating client");
+                    while (true)
+                    {
+                        try
+                        {
+                            Console.WriteLine("Enter name: ");
+                            name = Console.ReadLine();
+                            Console.WriteLine("Enter second name");
+                            second_name = Console.ReadLine();
+                            Console.WriteLine("Enter email");
+                            email = Console.ReadLine();
+                            id = clientController.GetAllClients().OrderByDescending(client => client.Id).FirstOrDefault()?.Id + 1 ?? 0;
+                            clientController.CreateClient(id, name, second_name, email);
+                            Console.WriteLine("Client created succesfully!");
+                            break;
+                        }
+                        catch (Exception ex) 
+                        {
+                            Console.WriteLine("Something went wrong, try again");
+                        }
+                    }
+                    break;
+                case '3':
+                    while (true)
+                    {
+                        try
+                        {
+                            id = getClient(clientController.GetAllClients());
+                            Console.WriteLine("Enter new name: ");
+                            name = Console.ReadLine();
+                            Console.WriteLine("Enter new second name");
+                            second_name = Console.ReadLine();
+                            Console.WriteLine("Enter new email");
+                            email = Console.ReadLine();
+                            clientController.UpdateClient(id, name, second_name, email);
+                            Console.WriteLine("Client updated succesfully!");
+                            break;
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Something went wrong, try again");
+                        }
+                    }
+                    break;
+                case '4':
+                    id = getClient(clientController.GetAllClients());
+                    clientController.DeleteClient(id);
+                    Console.WriteLine("Client deleted succesfully");
+                    break;
+                case '5':
+                    return;
+                default:
+                    Console.WriteLine("Invalid choice. Please choose a number from 1 to 5.");
+                    continue;
+            }
+        }
+    }
+
+    private static void productMenu(ProductController productController)
+    {
+        string name;
+        int id;
+        string price;
+        string amount;
+
+        while (true)
+        {
+            Console.WriteLine("CLIENT MENU");
+            Console.WriteLine("1. View products");
+            Console.WriteLine("2. Add product");
+            Console.WriteLine("3. Update product");
+            Console.WriteLine("4. Delete product");
+            Console.WriteLine("5. Exit");
+
+            char key = Console.ReadKey().KeyChar;
+            Console.Clear();
+
+            switch (key)
+            {
+                case '1':
+                    Console.WriteLine("List of products:");
+                    foreach (Product product in productController.GetAllProducts())
+                    {
+                        Console.WriteLine($"ID: {product.Id}, Name: {product.Name}, Price: {product.Price}, Stored Amount: {product.StoredAmount}");
+                    }
+                    break;
+                case '2':
+                    Console.WriteLine("Creating product:");
+                    while (true)
+                    {
+                        try
+                        {
+                            Console.WriteLine("Enter name: ");
+                            name = Console.ReadLine();
+                            Console.WriteLine("Enter price");
+                            price = Console.ReadLine();
+                            Decimal.TryParse(price, out decimal price_decimal);
+                            Console.WriteLine("Enter stored amount");
+                            amount = Console.ReadLine();
+                            int.TryParse(amount, out int amount_decimal);
+                            id = productController.GetAllProducts().OrderByDescending(product => product.Id).FirstOrDefault()?.Id + 1 ?? 0;
+                            productController.CreateProduct(id, name, price_decimal, amount_decimal);
+                            Console.WriteLine("Product created succesfully!");
+                            break;
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Something went wrong, try again");
+                        }
+                    }
+                    break;
+                case '3':
+                    Console.WriteLine("Updating product: ");
+                    while (true)
+                    {
+                        try
+                        {
+                            id = getProduct(productController.GetAllProducts());
+                            Console.WriteLine("Enter new name: ");
+                            name = Console.ReadLine();
+                            Console.WriteLine("Enter new price");
+                            price = Console.ReadLine();
+                            decimal.TryParse(price, out decimal price_decimal);
+                            Console.WriteLine("Enter new stored amount");
+                            amount = Console.ReadLine();
+                            int.TryParse(amount, out int amount_decimal);
+                            productController.UpdateProduct(id, name, price_decimal, amount_decimal);
+                            Console.WriteLine("Product updated succesfully!");
+                            break;
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Something went wrong, try again");
+                        }
+                    }
+                    break;
+                case '4':
+                    Console.WriteLine("Deleting product: ");
+                    id = getProduct(productController.GetAllProducts());
+                    productController.DeleteProduct(id);
+                    Console.WriteLine("Product deleted succesfully!");
+                    break;
+                case '5':
+                    return;
+                default:
+                    Console.WriteLine("Invalid choice. Please choose a number from 1 to 5.");
+                    continue;
+            }
+        }
+    }
+
+    private static void Main(string[] args)
+    {
+        List<Product>? productList;
+        int clientId;
+        int orderToUpdateId;
+        int orderToDeleteId;
+        Order? order;
+        char input;
+        Order.OrderStatus status;
+        IDatabaseService context = new DatabaseService();
+
+        while (true)
+        {
+            ClientController clientController = new ClientController(context);
+            ProductController productController = new ProductController(context);
+            OrderController orderController = new OrderController(context);
+
+
+            Console.WriteLine("MENU");
+            Console.WriteLine("1. Orders");
+            Console.WriteLine("2. Clients");
+            Console.WriteLine("3. Products");
+            Console.WriteLine("4. Exit");
+
+            char key = Console.ReadKey().KeyChar;
+            Console.Clear();
+            switch (key)
+            {
+                case '1':
+                    orderMenu(orderController, clientController, productController);
+                    break;
+
+                case '2':
+                    clientMenu(clientController);
+                    break;
+
+                case '3':
+                    productMenu(productController);
+                    break;
+
+                case '4':
+                    return;
+
+                default:
+                    Console.WriteLine("Invalid choice. Please choose a number from 1 to 4.");
+                    continue;
+
             }
         }
     }

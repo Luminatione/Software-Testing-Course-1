@@ -31,7 +31,18 @@ namespace Database
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             options.UseSqlite($"Data Source={DbPath}");
+            options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
             base.OnConfiguring(options);
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Product>().HasKey(p => p.Id);
+            modelBuilder.Entity<Order>().HasKey(o => o.ID);
+            modelBuilder.Entity<Client>().HasKey(c => c.Id);
+
+            modelBuilder.Entity<Order>().HasMany(o => o.Products).WithOne();
+            base.OnModelCreating(modelBuilder);
         }
     }    
 }

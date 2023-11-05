@@ -1,5 +1,7 @@
-﻿using ConsoleApp1.Model;
+﻿using ConsoleApp1.DataBase;
+using ConsoleApp1.Model;
 using ConsoleApp1.Repository.Interface;
+using Database;
 using System;
 using System.Collections.Generic;
 
@@ -7,41 +9,41 @@ namespace ConsoleApp1.Controllers
 {
     public class ProductController
     {
-        private readonly IProductRepository productRepository;
+        private readonly IDatabaseService context;
 
-        public ProductController(IProductRepository productRepo)
+        public ProductController(IDatabaseService context)
         {
-            this.productRepository = productRepo;
+            this.context = context;
         }
 
         public void CreateProduct(int id, string name, decimal price, int storedAmount)
         {
             Product newProduct = new Product(id, name, price, storedAmount);
-            productRepository.AddProduct(newProduct);
+            context.AddProduct(newProduct);
         }
 
         public Product? GetProductById(int productId)
         {
-            return productRepository.GetProductById(productId);
+            return context.GetProductByIdOrNull(productId);
         }
 
         public List<Product> GetAllProducts()
         {
-            return productRepository.GetAllProducts();
+            return context.GetAllProducts();
         }
 
         public void UpdateProduct(int productId, string name, decimal price, int storedAmount)
         {
-            Product existingProduct = productRepository.GetProductById(productId);
+            Product existingProduct = GetProductById(productId) ?? throw new ArgumentException("No product with such Id");
             existingProduct.Name = name;
             existingProduct.Price = price;
             existingProduct.StoredAmount = storedAmount;
-            productRepository.UpdateProduct(existingProduct);
+            context.UpdateProduct(existingProduct);
         }
 
         public void DeleteProduct(int productId)
         {
-            productRepository.DeleteProduct(productId);
+            context.RemoveProduct(productId);
         }
     }
 }
