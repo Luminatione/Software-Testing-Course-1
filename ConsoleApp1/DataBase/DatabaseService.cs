@@ -2,7 +2,7 @@ using ConsoleApp1.DataBase;
 using ConsoleApp1.Model;
 using Microsoft.EntityFrameworkCore;
 
-namespace ConsoleApp1.DataBase
+namespace Database
 {
     public class DatabaseService : IDatabaseService
     {
@@ -11,7 +11,8 @@ namespace ConsoleApp1.DataBase
         public DatabaseService()
         {
             _databaseContext = new DatabaseContext();
-            _databaseContext.Database.EnsureCreated ();
+            _databaseContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            _databaseContext.ChangeTracker.Clear();
         }
 
         public void AddOrder(Order newOrder)
@@ -20,7 +21,14 @@ namespace ConsoleApp1.DataBase
             {
                 throw new OrderAlreadyExistsException(newOrder.ID);
             }
-
+            List<Product> products = new List<Product>();
+            foreach (var product in newOrder.Products)
+            {
+                products.Add(GetProductByIdOrNull(product.Id) ?? throw new ProductNotFoundException(product.Id));
+            }
+            newOrder.Products = products;
+            _databaseContext.ChangeTracker.Clear();
+            newOrder.Products.ForEach(p => _databaseContext.Entry(p).State = EntityState.Unchanged);
             _databaseContext.Orders.Add(newOrder);
             _databaseContext.SaveChanges();
         }
@@ -67,6 +75,7 @@ namespace ConsoleApp1.DataBase
                 throw new ClientNotFoundException(clientId);
             }
 
+            _databaseContext.Entry(clientToRemove).State = EntityState.Deleted;
             _databaseContext.Clients.Remove(clientToRemove);
             _databaseContext.SaveChanges();
         }
@@ -78,44 +87,14 @@ namespace ConsoleApp1.DataBase
             {
                 throw new ProductNotFoundException(productId);
             }
-
+            _databaseContext.Entry(productToRemove).State = EntityState.Deleted;
             _databaseContext.Products.Remove(productToRemove);
             _databaseContext.SaveChanges();
         }
 
-        public void UpdateOrder(Order newOrder)
-        {
-            if (GetOrderByIdOrNull(newOrder.ID) == null)
-            {
-                throw new OrderNotFoundException(newOrder.ID);
-            }
-            RemoveOrder(newOrder.ID);
-            AddOrder(newOrder);
-        }
-
-        public void UpdateClient(Client newClient)
-        {
-            if (GetClientByIdOrNull(newClient.Id) == null)
-            {
-                throw new ClientNotFoundException(newClient.Id);
-            }
-            RemoveClient(newClient.Id);
-            AddClient(newClient);
-        }
-
-        public void UpdateProduct(Product newProduct)
-        {
-            if (GetProductByIdOrNull(newProduct.Id) == null)
-            {
-                throw new ProductNotFoundException(newProduct.Id);
-            }
-            RemoveProduct(newProduct.Id);
-            AddProduct(newProduct);
-        }
-
         public Order? GetOrderByIdOrNull(int orderId)
         {
-            return _databaseContext.Orders.FirstOrDefault(o => o.ID == orderId);
+            return _databaseContext.Orders.Include(e => e.Products).FirstOrDefault(o => o.ID == orderId);
         }
 
         public Client? GetClientByIdOrNull(int clientId)
@@ -128,17 +107,47 @@ namespace ConsoleApp1.DataBase
             return _databaseContext.Products.FirstOrDefault(p => p.Id == productId);
         }
 
-        public async Task<List<Product>> GetAllProductsAsync()
+        public void UpdateOrder(Order order)
         {
-            return await _databaseContext.Products.ToListAsync();
+            List<Product> products = new List<Product>();
+            foreach (var product in order.Products)
+            {
+                products.Add(GetProductByIdOrNull(product.Id) ?? throw new ProductNotFoundException(product.Id));
+            }
+            order.Products = products;
+            _databaseContext.ChangeTracker.Clear();
+            order.Products.ForEach(p => _databaseContext.Entry(p).State = EntityState.Unchanged);
+            _databaseContext.Orders.Update(order);
+            _databaseContext.SaveChanges();
         }
 
-        public void CelarDatabse ()
+        public void UpdateClient(Client client)
         {
-            _databaseContext.Orders.RemoveRange (_databaseContext.Orders);
-            _databaseContext.Clients.RemoveRange (_databaseContext.Clients);
-            _databaseContext.Products.RemoveRange (_databaseContext.Products);
-            _databaseContext.SaveChanges ();
+            _databaseContext.Entry(client).State = EntityState.Modified;
+            _databaseContext.Clients.Update(client);
+            _databaseContext.SaveChanges();
+        }
+
+        public void UpdateProduct(Product product)
+        {
+            _databaseContext.Entry(product).State = EntityState.Modified;
+            _databaseContext.Products.Update(product);
+            _databaseContext.SaveChanges();
+        }
+
+        public List<Product> GetAllProducts()
+        {
+            return _databaseContext.Products.ToList();
+        }
+
+        public List<Order> GetAllOrders()
+        {
+            return _databaseContext.Orders.Include(e => e.Products).ToList();
+        }
+
+        public List<Client> GetAllClients()
+        {
+            return _databaseContext.Clients.ToList();
         }
     }
 }

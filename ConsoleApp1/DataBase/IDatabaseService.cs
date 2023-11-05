@@ -12,16 +12,16 @@ namespace ConsoleApp1.DataBase
         public void RemoveClient(int clientId);
         public void RemoveProduct(int productId);
 
-        public void UpdateOrder(Order newOrder);
-        public void UpdateClient(Client newClient);
-        public void UpdateProduct(Product newProduct);
-
         public Order? GetOrderByIdOrNull(int orderId);
         public Client? GetClientByIdOrNull(int clientId);
         public Product? GetProductByIdOrNull(int productId);
-        public Task<List<Product>> GetAllProductsAsync();
 
-        public void CelarDatabse ();
+        public List<Product> GetAllProducts();
+        public List<Order> GetAllOrders();
+        public List<Client> GetAllClients();
+
+        public void UpdateOrder(Order order);
+        public void UpdateClient(Client client);
+        public void UpdateProduct(Product product);
     }
 }
-

@@ -1,13 +1,5 @@
 ﻿using ConsoleApp1.DataBase;
 using ConsoleApp1.Model;
-using ConsoleApp1.Repository.Interface;
-using Database;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ConsoleApp1.Controllers
 {

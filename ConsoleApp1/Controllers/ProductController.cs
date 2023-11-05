@@ -1,9 +1,5 @@
 ﻿using ConsoleApp1.DataBase;
 using ConsoleApp1.Model;
-using ConsoleApp1.Repository.Interface;
-using Database;
-using System;
-using System.Collections.Generic;
 
 namespace ConsoleApp1.Controllers
 {
