@@ -117,7 +117,7 @@ namespace ConsoleApp1.Tests
 			var product = new Product(productId + 1, "", 0, 10);
 
 			dbServiceMock.Setup(repo => repo.GetClientByIdOrNull(clientId)).Returns(new Client(clientId, "", "", ""));
-			dbServiceMock.Setup(repo => repo.GetAllProducts()).Returns(new List<Product> { product });
+			dbServiceMock.Setup(repo => repo.GetAllProducts()).Returns(new List<Product>());
 			dbServiceMock.Setup(repo => repo.GetProductByIdOrNull(productId)).Returns((Product)null);
 			dbServiceMock.Setup(repo => repo.GetAllOrders()).Returns(new List<Order>());
 
