@@ -149,5 +149,17 @@ namespace Database
         {
             return _databaseContext.Clients.ToList();
         }
+
+        public void CelarDatabse ()
+        {
+            _databaseContext.Clients.RemoveRange (_databaseContext.Clients);
+            _databaseContext.SaveChanges ();
+
+            _databaseContext.Products.RemoveRange (_databaseContext.Products);
+            _databaseContext.SaveChanges ();
+
+            _databaseContext.Orders.RemoveRange (_databaseContext.Orders);
+            _databaseContext.SaveChanges ();
+        }
     }
 }

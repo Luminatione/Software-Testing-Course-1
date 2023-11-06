@@ -44,7 +44,7 @@ namespace ConsoleApp1.Model
 
             return this.ID == other.ID
                 && this.CustomerID == other.CustomerID
-                && this.Products.Equals (other.Products)
+                && this.Products.SequenceEqual (other.Products)
                 && this.Status == other.Status;
         }
     }

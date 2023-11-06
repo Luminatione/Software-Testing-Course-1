@@ -49,7 +49,7 @@ namespace ConsoleApp1.Controllers
             {
                 var storedProduct = context.GetProductByIdOrNull(product.Id);
                 storedProduct.StoredAmount -= product.StoredAmount;
-                context.UpdateProduct(storedProduct);
+                //context.UpdateProduct(storedProduct);
             }
             context.AddOrder(new Order(orderId, clientId, productList, Order.OrderStatus.New));
         }
