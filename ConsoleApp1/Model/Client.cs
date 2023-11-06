@@ -12,5 +12,7 @@ namespace ConsoleApp1.Model
         public string Name { get; set; } = name;
         public string SecondName { get; set; } = secondName;
         public string Email { get; set; } = email;
+
+        public Client() : this(0, "", "", "") { }
     }
 }

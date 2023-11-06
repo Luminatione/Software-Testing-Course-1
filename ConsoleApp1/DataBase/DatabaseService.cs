@@ -11,6 +11,7 @@ namespace Database
         public DatabaseService()
         {
             _databaseContext = new DatabaseContext();
+            _databaseContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 
         public void AddOrder(Order newOrder)
@@ -19,7 +20,14 @@ namespace Database
             {
                 throw new OrderAlreadyExistsException(newOrder.ID);
             }
-
+            List<Product> products = new List<Product>();
+            foreach(var product in newOrder.Products)
+            {
+                products.Add(GetProductByIdOrNull(product.Id) ?? throw new ProductNotFoundException(product.Id));        
+            }
+            newOrder.Products = products;
+            _databaseContext.ChangeTracker.Clear();
+            newOrder.Products.ForEach(p => _databaseContext.Entry(p).State = EntityState.Unchanged);
             _databaseContext.Orders.Add(newOrder);
             _databaseContext.SaveChanges();
         }
@@ -84,7 +92,7 @@ namespace Database
 
         public Order? GetOrderByIdOrNull(int orderId)
         {
-            return _databaseContext.Orders.FirstOrDefault(o => o.ID == orderId);
+            return _databaseContext.Orders.Include(e => e.Products).FirstOrDefault(o => o.ID == orderId);
         }
 
         public Client? GetClientByIdOrNull(int clientId)
@@ -97,9 +105,45 @@ namespace Database
             return _databaseContext.Products.FirstOrDefault(p => p.Id == productId);
         }
 
-        public async Task<List<Product>> GetAllProductsAsync()
+        public void UpdateOrder(Order order)
         {
-            return await _databaseContext.Products.ToListAsync();
+            List<Product> products = new List<Product>();
+            foreach (var product in order.Products)
+            {
+                products.Add(GetProductByIdOrNull(product.Id) ?? throw new ProductNotFoundException(product.Id));
+            }
+            order.Products = products;
+            _databaseContext.ChangeTracker.Clear();
+            order.Products.ForEach(p => _databaseContext.Entry(p).State = EntityState.Unchanged);
+            _databaseContext.Orders.Update(order);
+            _databaseContext.SaveChanges();
+        }
+
+        public void UpdateClient(Client client)
+        {
+            _databaseContext.Clients.Update(client);
+            _databaseContext.SaveChanges();
+        }
+
+        public void UpdateProduct(Product product)
+        {
+            _databaseContext.Products.Update(product);
+            _databaseContext.SaveChanges();
+        }
+
+        public List<Product> GetAllProducts()
+        {
+            return _databaseContext.Products.ToList();
+        }
+
+        public List<Order> GetAllOrders()
+        {
+            return _databaseContext.Orders.Include(e => e.Products).ToList();
+        }
+
+        public List<Client> GetAllClients()
+        {
+            return _databaseContext.Clients.ToList();
         }
     }
 }

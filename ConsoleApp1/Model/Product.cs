@@ -12,5 +12,7 @@ namespace ConsoleApp1.Model
         public string Name { get; set; } = name;
         public decimal Price { get; set; } = price;
         public int StoredAmount { get; set; } = storedAmount;
+
+        public Product() : this(0, "", 0, 0) { }    
     }
 }
