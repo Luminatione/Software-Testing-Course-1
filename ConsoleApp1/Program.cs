@@ -196,10 +196,13 @@ public class Program
         while (true)
         {
             List<Product>? productList;
+            Product old_product;
             int clientId;
             int orderToUpdateId;
             int orderToDeleteId;
             Order? order;
+            Order? old_order;
+            int new_amount;
             char input;
             Order.OrderStatus status;
 
@@ -234,6 +237,12 @@ public class Program
                     clientId = getClient(clientController.GetAllClients());
                     orderController.CreateOrder(clientId, productList);
                     Console.WriteLine("Order created succesfully");
+                    foreach (Product product in productList)
+                    {
+                        old_product = productController.GetProductById(product.Id);
+                        new_amount = old_product.StoredAmount - product.StoredAmount;
+                        productController.UpdateProduct(product.Id, product.Name, product.Price, new_amount);
+                    }
                     break;
 
                 case '3':
@@ -249,7 +258,7 @@ public class Program
                     Console.WriteLine("\n\n");
                     Console.WriteLine("Want to change client? (Y/N)");
                     input = Console.ReadKey().KeyChar;
-                    if (input == 'Y')
+                    if (input == 'Y' || input == 'y')
                     {
                         clientId = getClient(clientController.GetAllClients());
                     }
@@ -259,7 +268,7 @@ public class Program
                     }
                     Console.WriteLine("Want to change products? (Y/N)");
                     input = Console.ReadKey().KeyChar;
-                    if (input == 'Y')
+                    if (input == 'Y' || input == 'y')
                     {
                         productList = getProducts(productController.GetAllProducts());
                     }
@@ -269,7 +278,7 @@ public class Program
                     }
                     Console.WriteLine("Want to chagne status? (Y/N)");
                     input = Console.ReadKey().KeyChar;
-                    if (input == 'Y')
+                    if (input == 'Y' || input == 'y')
                     {
                         status = getStatus();
                     }
@@ -278,11 +287,25 @@ public class Program
                         status = order.Status;
                     }
                     orderController.UpdateOrder(orderToUpdateId, clientId, productList, status);
+                    foreach (Product product in productList)
+                    {
+                        old_product = productController.GetProductById(product.Id);
+                        new_amount = old_product.StoredAmount - product.StoredAmount;
+                        productController.UpdateProduct(product.Id, product.Name, product.Price, new_amount);
+                    }
+                    Console.WriteLine("Order updated succesfully");
                     break;
 
                 case '4':
                     Console.WriteLine("Deleting order");
                     orderToDeleteId = getOrder(orderController.GetAllOrders());
+                    old_order = orderController.GetOrderById(orderToDeleteId);
+                    foreach (Product product in old_order.Products)
+                    {
+                        old_product = productController.GetProductById(product.Id);
+                        new_amount = old_product.StoredAmount + product.StoredAmount;
+                        productController.UpdateProduct(product.Id, product.Name, product.Price, new_amount);
+                    }
                     orderController.CancelOrder(orderToDeleteId);
                     Console.WriteLine("Order deleted succesfully");
                     break;
@@ -349,6 +372,7 @@ public class Program
                     }
                     break;
                 case '3':
+                    Console.WriteLine("Updating Client");
                     while (true)
                     {
                         try
@@ -371,6 +395,7 @@ public class Program
                     }
                     break;
                 case '4':
+                    Console.WriteLine("Deleting Client");
                     id = getClient(clientController.GetAllClients());
                     clientController.DeleteClient(id);
                     Console.WriteLine("Client deleted succesfully");
@@ -479,13 +504,6 @@ public class Program
 
     private static void Main(string[] args)
     {
-        List<Product>? productList;
-        int clientId;
-        int orderToUpdateId;
-        int orderToDeleteId;
-        Order? order;
-        char input;
-        Order.OrderStatus status;
         IDatabaseService context = new DatabaseService();
 
         while (true)
