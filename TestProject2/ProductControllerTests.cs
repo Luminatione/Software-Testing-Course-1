@@ -209,7 +209,7 @@ namespace ConsoleApp1.Tests
         }
 
         [Fact]
-        public void UpdateConttroler_InvalidDataId_ThrowsNullReferenceException ()
+        public void UpdateProduct_InvalidDataId_ThrowsArgumentException ()
         {
             // Arrange
             DatabaseService databaseService = new DatabaseService ();
@@ -225,7 +225,7 @@ namespace ConsoleApp1.Tests
             productController.CreateProduct (productId, productName, productPrice, productAmount);
 
             // Act and Assert
-            Assert.Throws<NullReferenceException> (
+            Assert.Throws<ArgumentException> (
                 () =>
                     productController.UpdateProduct (
                         99,
