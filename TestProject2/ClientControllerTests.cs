@@ -12,7 +12,7 @@ namespace ConsoleApp1.Tests
     public class ClientControllerTests
     {
         [Fact]
-        public void CreateClient_ValidClientAndProducts_AddsClient ()
+        public void CreateClient_ValiDdata_AddsClient ()
         {
             // Arrange
             DatabaseService detabaseServiecve = new DatabaseService ();
@@ -36,7 +36,7 @@ namespace ConsoleApp1.Tests
         }
 
         [Fact]
-        public void CreateClient_ValidClientAndProducts_AddsXlientThatExists ()
+        public void CreateClient_ValiDdata_AddsClientThatExists ()
         {
             // Arrange
             DatabaseService detabaseServiecve = new DatabaseService ();
@@ -58,7 +58,7 @@ namespace ConsoleApp1.Tests
         }
 
         [Fact]
-        public void CreateClient_InvalidName_ThrowsArgumentException ()
+        public void CreateClient_InvalidName_ThrowsDbUpdateException ()
         {
             // Arrange
             DatabaseService detabaseServiecve = new DatabaseService ();
@@ -78,7 +78,7 @@ namespace ConsoleApp1.Tests
         }
 
         [Fact]
-        public void CreateClient_InvalidSecondName_ThrowsArgumentException ()
+        public void CreateClient_InvalidSecondName_ThrowsDbUpdateException ()
         {
             // Arrange
             DatabaseService detabaseServiecve = new DatabaseService ();
@@ -98,7 +98,7 @@ namespace ConsoleApp1.Tests
         }
 
         [Fact]
-        public void CreateClient_InvalidEmail_ThrowsArgumentException ()
+        public void CreateClient_InvalidEmail_ThrowsDbUpdateException ()
         {
             // Arrange
             DatabaseService detabaseServiecve = new DatabaseService ();
@@ -225,7 +225,7 @@ namespace ConsoleApp1.Tests
         }
 
         [Fact]
-        public void UpdateClient_InvalidDataId_ThrowsException ()
+        public void UpdateClient_InvalidDataId_ThrowsNullReferenceException ()
         {
             // Arrange
             DatabaseService databaseService = new DatabaseService ();
@@ -253,7 +253,7 @@ namespace ConsoleApp1.Tests
         }
 
         [Fact]
-        public void UpdateClient_InvalidDataName_ThrowsException ()
+        public void UpdateClient_InvalidDataName_ThrowsInvalidOperationException ()
         {
             // Arrange
             DatabaseService databaseService = new DatabaseService ();
@@ -281,7 +281,7 @@ namespace ConsoleApp1.Tests
         }
 
         [Fact]
-        public void UpdateClient_InvalidDataSecondName_ThrowsException ()
+        public void UpdateClient_InvalidDataSecondName_ThrowsInvalidOperationException ()
         {
             // Arrange
             DatabaseService databaseService = new DatabaseService ();
@@ -309,7 +309,7 @@ namespace ConsoleApp1.Tests
         }
 
         [Fact]
-        public void UpdateClient_InvalidDataEmail_ThrowsException ()
+        public void UpdateClient_InvalidDataEmail_ThrowsInvalidOperationException ()
         {
             // Arrange
             DatabaseService databaseService = new DatabaseService ();
@@ -361,7 +361,7 @@ namespace ConsoleApp1.Tests
         }
 
         [Fact]
-        public void DelateClient_InvalidData_ThrowsException ()
+        public void DelateClient_InvalidData_ThrowsClientNotFoundException ()
         {
             // Arrange
             DatabaseService databaseService = new DatabaseService ();
