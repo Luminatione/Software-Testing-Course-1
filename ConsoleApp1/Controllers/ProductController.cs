@@ -14,8 +14,15 @@ namespace ConsoleApp1.Controllers
 
         public void CreateProduct(int id, string name, decimal price, int storedAmount)
         {
-            Product newProduct = new Product(id, name, price, storedAmount);
-            context.AddProduct(newProduct);
+            if (price is decimal)
+            {
+                Product newProduct = new Product (id, name, price, storedAmount);
+                context.AddProduct (newProduct);
+            }
+            else
+            {
+                throw new ArgumentException ("Proce has to be decimal!");
+            }
         }
 
         public Product? GetProductById(int productId)
