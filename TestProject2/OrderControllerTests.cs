@@ -185,14 +185,20 @@ namespace ConsoleApp1.Tests
         {
             // Arrange
             DatabaseService detabaseServiecve = new DatabaseService ();
+            detabaseServiecve.CelarDatabse ();
 
             var orderController = new OrderController (detabaseServiecve);
 
             var clientId = 1;
             var productId = 1;
-            var productList = new List<Product> { new Product (productId, "", 4, 5) };
+            var productList = new List<Product> { new Product (productId, "", 4, 1) };
 
-            int orderId = (orderController.GetAllOrders ().LastOrDefault ()?.ID ?? 0);
+            detabaseServiecve.AddClient (new Client (clientId, "", "", ""));
+            detabaseServiecve.AddProduct (productList[0]);
+            orderController.CreateOrder (clientId, productList);
+
+            int orderId = (orderController.GetAllOrders ().LastOrDefault ()?.ID + 1 ?? 0);
+            detabaseServiecve.AddOrder (new Order (orderId, clientId, productList, Order.OrderStatus.New));
 
             // Act and Assert
             Assert.Equal<Order> (
