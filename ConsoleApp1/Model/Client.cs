@@ -12,5 +12,18 @@ namespace ConsoleApp1.Model
         public string Name { get; set; } = name;
         public string SecondName { get; set; } = secondName;
         public string Email { get; set; } = email;
+
+        public override bool Equals (object obj)
+        {
+            if (obj == null || !(obj is Client other))
+            {
+                return false;
+            }
+
+            return this.Id == other.Id
+                && this.Name == other.Name
+                && this.SecondName == other.SecondName
+                && this.Email == other.Email;
+        }
     }
 }
